@@ -1,5 +1,5 @@
 export type PropertyType =
-    | "single family"
+    | "single-family"
     | "condo"
     | "townhouse"
     | "multi-family";
@@ -7,8 +7,17 @@ export type PropertyType =
 export type MarketPosition =
     | "potential_opportunity"
     | "within_range"
-    | "above range"
+    | "above_range"
     | "low_confidence";
+
+
+export type ListingAnalytics = {
+    pricePerSqft: number;
+    datasetMedianPricePerSqft: number;
+    priceDeltaPct: number;
+    marketPosition: MarketPosition;
+    explanation: string;
+};
 
 export type Listing = {
     id: string;
@@ -34,3 +43,8 @@ export type ListingState =
 export type DrawerState =
     | { status: "closed" }
     | { status: "open", listingId: string };
+
+
+export type EnrichedListing = Listing & {
+    analytics: ListingAnalytics;
+};
