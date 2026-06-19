@@ -1,9 +1,16 @@
 import { calculatePricePerSquareFoot } from "@/lib/analytics/price";
 import { demo_listings } from "@/lib/data/demo-listings";
+import { median } from "@/lib/analytics/stats";
+
 
 export default function Home() {
   const featuredListing = demo_listings[0];
   const pricePerSquareFoot = calculatePricePerSquareFoot(featuredListing);
+  const allPricesPerSquareFoot = demo_listings.map((listing) =>
+    calculatePricePerSquareFoot(listing),
+  );
+
+  const medianPricePerSquareFoot = median(allPricesPerSquareFoot);
   return (
     <main className="min-h-screen bg-slate-950 px-8 py-16 text-slate-100">
       <section className="mx-auto max-w-4xl">
@@ -45,6 +52,10 @@ export default function Home() {
 
           <p className="mt-2 text-slate-400">
             ${pricePerSquareFoot.toLocaleString()} per sq ft
+          </p>
+
+          <p className="mt-2 text-slate-400">
+            Dataset median: ${medianPricePerSquareFoot.toLocaleString()} per sq ft
           </p>
         </div>
       </section>
