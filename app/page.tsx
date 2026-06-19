@@ -1,4 +1,9 @@
+import { calculatePricePerSquareFoot } from "@/lib/analytics/price";
+import { demo_listings } from "@/lib/data/demo-listings";
+
 export default function Home() {
+  const featuredListing = demo_listings[0];
+  const pricePerSquareFoot = calculatePricePerSquareFoot(featuredListing);
   return (
     <main className="min-h-screen bg-slate-950 px-8 py-16 text-slate-100">
       <section className="mx-auto max-w-4xl">
@@ -19,7 +24,27 @@ export default function Home() {
         <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <p className="text-sm text-slate-400">Current build milestone</p>
           <p className="mt-2 text-xl font-semibold">
-            Project scaffold is live.
+            First analytics function is live.
+          </p>
+        </div>
+        <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <p className="text-sm font-medium text-cyan-400">Featured listing</p>
+
+          <h2 className="mt-2 text-2xl font-semibold">
+            {featuredListing.address}
+          </h2>
+
+          <p className="mt-2 text-slate-300">
+            {featuredListing.neighbourhood} · {featuredListing.beds} beds ·{" "}
+            {featuredListing.baths} baths · {featuredListing.sqft} sq ft
+          </p>
+
+          <p className="mt-4 text-3xl font-bold">
+            ${featuredListing.listPrice.toLocaleString()}
+          </p>
+
+          <p className="mt-2 text-slate-400">
+            ${pricePerSquareFoot.toLocaleString()} per sq ft
           </p>
         </div>
       </section>
