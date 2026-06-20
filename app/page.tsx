@@ -2,7 +2,7 @@ import { calculatePricePerSquareFoot } from "@/lib/analytics/price";
 import { demo_listings } from "@/lib/data/demo-listings";
 import { median } from "@/lib/analytics/stats";
 import { enrichListings } from "@/lib/analytics/score";
-
+import { ListingCard } from "@/app/components/ListingCard";
 
 export default function Home() {
   const featuredListing = demo_listings[0];
@@ -64,48 +64,7 @@ export default function Home() {
 
         <div className="mt-8 grid gap-4">
           {enrichedListings.map((listing) => (
-            <article
-              key={listing.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900 p-5"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium text-cyan-400">
-                    {listing.neighbourhood}
-                  </p>
-
-                  <h2 className="mt-1 text-xl font-semibold">
-                    {listing.address}
-                  </h2>
-
-                  <p className="mt-2 text-sm text-slate-400">
-                    {listing.beds} beds · {listing.baths} baths ·{" "}
-                    {listing.sqft.toLocaleString()} sqft · {listing.daysOnMarket} days
-                    on market
-                  </p>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-xl font-bold">
-                    ${listing.listPrice.toLocaleString()}
-                  </p>
-
-                  <p className="text-sm text-slate-400">
-                    ${listing.analytics.pricePerSqft.toLocaleString()}/sqft
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950 p-4">
-                <p className="text-sm font-medium text-slate-300">
-                  {listing.analytics.marketPosition.replaceAll("_", " ")}
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-slate-400">
-                  {listing.analytics.explanation}
-                </p>
-              </div>
-            </article>
+            <ListingCard key={listing.id} listing={listing} />
           ))}
         </div>
       </section>

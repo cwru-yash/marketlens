@@ -13,9 +13,11 @@ export type MarketPosition =
 
 export type ListingAnalytics = {
     pricePerSqft: number;
-    datasetMedianPricePerSqft: number;
+    compMedianPricePerSqft: number;
     priceDeltaPct: number;
     marketPosition: MarketPosition;
+    compCount: number;
+    lowConfidence: boolean;
     explanation: string;
 };
 
