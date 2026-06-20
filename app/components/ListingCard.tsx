@@ -30,9 +30,13 @@ export function ListingCard({ listing }: ListingCardProps) {
                     <p className="text-xl font-bold">
                         ${listing.listPrice.toLocaleString()}
                     </p>
-
                     <p className="text-sm text-slate-400">
                         ${listing.analytics.pricePerSqft.toLocaleString()}/sqft
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                        Comp median: $
+                        {listing.analytics.compMedianPricePerSqft.toLocaleString()}/sqft ·{" "}
+                        {listing.analytics.compCount} comps
                     </p>
                 </div>
             </div>

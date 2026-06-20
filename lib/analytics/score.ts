@@ -79,9 +79,11 @@ export function enrichListings(listings: Listing[]): EnrichedListing[] {
             ...listing,
             analytics: {
                 pricePerSqft,
-                datasetMedianPricePerSqft: compMedianPricePerSqft,
+                compMedianPricePerSqft,
                 priceDeltaPct,
                 marketPosition,
+                compCount: fallbackComps.length,
+                lowConfidence,
                 explanation: explainMarketPosition(
                     listing,
                     pricePerSqft,
