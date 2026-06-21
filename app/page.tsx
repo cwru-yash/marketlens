@@ -4,6 +4,7 @@ import { median } from "@/lib/analytics/stats";
 import { enrichListings } from "@/lib/analytics/score";
 import { ListingCard } from "@/app/components/ListingCard";
 import { KpiCards } from "@/app/components/KpiCards";
+import { MapSection } from "@/app/components/MapSection";
 
 export default function Home() {
   const featuredListing = demo_listings[0];
@@ -14,6 +15,7 @@ export default function Home() {
 
   const medianPricePerSquareFoot = median(allPricesPerSquareFoot);
   const enrichedListings = enrichListings(demo_listings);
+
 
   return (
     <main className="min-h-screen bg-slate-950 px-8 py-16 text-slate-100">
@@ -62,6 +64,7 @@ export default function Home() {
             Dataset median: ${medianPricePerSquareFoot.toLocaleString()} per sq ft
           </p>
         </div>
+        <MapSection listings={enrichedListings} />
         <KpiCards listings={enrichedListings} />
         <div className="mt-8 grid gap-4">
           {enrichedListings.map((listing) => (

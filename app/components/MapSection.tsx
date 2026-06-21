@@ -1,0 +1,24 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import type { EnrichedListing } from "@/lib/types";
+
+const ListingMap = dynamic(
+    () => import("@/app/components/ListingMap").then((mod) => mod.ListingMap),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="mt-8 flex h-[520px] items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 text-slate-400">
+                Loading map...
+            </div>
+        ),
+    },
+);
+
+type MapSectionProps = {
+    listings: EnrichedListing[];
+};
+
+export function MapSection({ listings }: MapSectionProps) {
+    return <ListingMap listings={listings} />;
+}
