@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from "react";
 import type { EnrichedListing } from "@/lib/types";
 
 type ListingCardProps = {
@@ -31,54 +32,100 @@ export function ListingCard({
     isSelected = false,
     onSelect,
 }: ListingCardProps) {
+    const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+        if (!onSelect) {
+            return;
+        }
+
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onSelect();
+        }
+    };
+
     return (
         <article
             onClick={onSelect}
-            className={`cursor-pointer rounded-2xl border bg-slate-900 p-5 shadow-lg shadow-slate-950/30 transition ${isSelected
-                    ? "border-cyan-400 ring-2 ring-cyan-400/20"
-                    : "border-slate-800 hover:border-slate-600"
+            onKeyDown={handleKeyDown}
+            role={onSelect ? "button" : undefined}
+            tabIndex={onSelect ? 0 : undefined}
+            className={`rounded-xl border bg-slate-900/95 p-4 shadow-lg shadow-slate-950/25 outline-none transition ${onSelect ? "cursor-pointer" : ""
+                } ${isSelected
+                    ? "border-cyan-400 ring-2 ring-cyan-400/25 shadow-cyan-950/30"
+                    : "border-slate-800 hover:border-slate-600 hover:bg-slate-900 focus-visible:border-cyan-400 focus-visible:ring-2 focus-visible:ring-cyan-400/25"
                 }`}
         >
             <div className="flex items-start justify-between gap-4">
-                <div>
-                    <div
-                        className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${getBadgeClasses(
-                            listing.analytics.marketPosition,
-                        )}`}
-                    >
-                        {formatMarketPosition(listing.analytics.marketPosition)}
-                    </div>
+                <div className="min-w-0">
+                    <h2 className="truncate text-base font-semibold text-slate-100">
+                        {listing.address}
+                    </h2>
 
-                    <h2 className="mt-3 text-xl font-semibold">{listing.address}</h2>
-
-                    <p className="mt-2 text-sm text-slate-400">
-                        {listing.neighbourhood} · {listing.beds} beds · {listing.baths}{" "}
-                        baths · {listing.sqft.toLocaleString()} sqft
+                    <p className="mt-1 text-sm text-slate-400">
+                        {listing.neighbourhood} · {listing.zipcode}
                     </p>
                 </div>
 
-                <div className="text-right">
-                    <p className="text-xl font-bold">
+                <div className="shrink-0 text-right">
+                    <p className="text-lg font-bold text-slate-50">
                         ${listing.listPrice.toLocaleString()}
                     </p>
 
-                    <p className="text-sm text-slate-400">
+                    <p className="text-xs text-slate-400">
                         ${listing.analytics.pricePerSqft.toLocaleString()}/sqft
                     </p>
                 </div>
             </div>
 
-            <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-                    Comparable signal
-                </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span
+                    className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${getBadgeClasses(
+                        listing.analytics.marketPosition,
+                    )}`}
+                >
+                    {formatMarketPosition(listing.analytics.marketPosition)}
+                </span>
 
-                <p className="mt-2 text-sm leading-6 text-slate-400">
-                    Comp median: $
-                    {listing.analytics.compMedianPricePerSqft.toLocaleString()}/sqft ·{" "}
-                    {listing.analytics.compCount} comps · Delta{" "}
-                    {listing.analytics.priceDeltaPct.toFixed(1)}%
-                </p>
+                <span className="text-xs text-slate-400">
+                    {listing.beds} bd
+                </span>
+                <span className="text-xs text-slate-600">/</span>
+                <span className="text-xs text-slate-400">
+                    {listing.baths} ba
+                </span>
+                <span className="text-xs text-slate-600">/</span>
+                <span className="text-xs text-slate-400">
+                    {listing.sqft.toLocaleString()} sqft
+                </span>
+            </div>
+
+            <div className="mt-3 grid grid-cols-3 gap-2 rounded-lg border border-slate-800 bg-slate-950/80 p-3">
+                <div>
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                        Median
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-200">
+                        ${listing.analytics.compMedianPricePerSqft.toLocaleString()}
+                    </p>
+                </div>
+
+                <div>
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                        Comps
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-200">
+                        {listing.analytics.compCount}
+                    </p>
+                </div>
+
+                <div>
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                        Delta
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-200">
+                        {listing.analytics.priceDeltaPct.toFixed(1)}%
+                    </p>
+                </div>
             </div>
         </article>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DetailDrawer } from "@/app/components/DetailDrawer";
 import { FilterBar } from "@/app/components/FilterBar";
 import { KpiCards } from "@/app/components/KpiCards";
@@ -19,12 +19,14 @@ export function DashboardExplorer({ listings }: DashboardExplorerProps) {
         listings[0]?.id ?? null,
     );
 
+    const [searchQuery, setSearchQuery] = useState("");
+    const hasMountedFilterState = useRef(false);
+
     const [marketPositionFilter, setMarketPositionFilter] = useState<
         MarketPosition | "all"
     >("all");
 
     const [sortOption, setSortOption] = useState<SortOption>("opportunity_first");
-    const [searchQuery, setSearchQuery] = useState("");
 
     const filteredListings = useMemo(() => {
         const normalizedSearchQuery = searchQuery.trim().toLowerCase();
@@ -68,9 +70,18 @@ export function DashboardExplorer({ listings }: DashboardExplorerProps) {
     }, [listings, searchQuery, marketPositionFilter, sortOption]);
 
     const selectedListing =
-        filteredListings.find((listing) => listing.id === selectedListingId) ??
-        filteredListings[0] ??
-        null;
+        filteredListings.find((listing) => listing.id === selectedListingId) ?? null;
+
+    const detailListing = selectedListing ?? filteredListings[0] ?? null;
+
+    useEffect(() => {
+        if (!hasMountedFilterState.current) {
+            hasMountedFilterState.current = true;
+            return;
+        }
+
+        setSelectedListingId(null);
+    }, [searchQuery, marketPositionFilter]);
 
     return (
         <section className="mt-8">
@@ -84,31 +95,46 @@ export function DashboardExplorer({ listings }: DashboardExplorerProps) {
             />
 
             <KpiCards listings={filteredListings} />
+
             <p className="mt-4 text-sm text-slate-400">
                 Showing {filteredListings.length} of {listings.length} listings
             </p>
 
-            <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.75fr)]">
-                <div>
-                    <MapSection
-                        listings={filteredListings}
-                        selectedListingId={selectedListing?.id ?? null}
-                        onSelectListing={setSelectedListingId}
-                    />
-
-                    <div className="mt-6 grid gap-4 md:grid-cols-2">
-                        {filteredListings.map((listing) => (
+            <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(360px,0.85fr)_minmax(0,1.15fr)]">
+                <div className="min-w-0 space-y-4">
+                    {filteredListings.length === 0 ? (
+                        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
+                            <p className="text-lg font-semibold text-slate-200">
+                                No listings match your search.
+                            </p>
+                            <p className="mt-2 text-sm text-slate-400">
+                                Try a different neighbourhood, ZIP code, property type, or
+                                market-position filter.
+                            </p>
+                        </div>
+                    ) : (
+                        filteredListings.map((listing) => (
                             <ListingCard
                                 key={listing.id}
                                 listing={listing}
-                                isSelected={listing.id === selectedListing?.id}
+                                isSelected={listing.id === selectedListingId}
                                 onSelect={() => setSelectedListingId(listing.id)}
                             />
-                        ))}
-                    </div>
+                        ))
+                    )}
                 </div>
 
-                <DetailDrawer listing={selectedListing} />
+                <div className="min-w-0">
+                    <div className="sticky top-6 space-y-6">
+                        <MapSection
+                            listings={filteredListings}
+                            selectedListingId={selectedListing?.id ?? null}
+                            onSelectListing={setSelectedListingId}
+                        />
+
+                        <DetailDrawer listing={detailListing} />
+                    </div>
+                </div>
             </div>
         </section>
     );

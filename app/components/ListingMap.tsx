@@ -2,15 +2,75 @@
 
 import "leaflet/dist/leaflet.css";
 
+import { useEffect } from "react";
 import type { EnrichedListing } from "@/lib/types";
 import { Icon } from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import {
+    MapContainer,
+    Marker,
+    Popup,
+    TileLayer,
+    useMap,
+} from "react-leaflet";
 
 type ListingMapProps = {
     listings: EnrichedListing[];
     selectedListingId: string | null;
     onSelectListing: (listingId: string) => void;
 };
+
+type MapViewportControllerProps = {
+    listings: EnrichedListing[];
+    selectedListing: EnrichedListing | null;
+};
+
+const DEFAULT_CENTER: [number, number] = [41.4993, -81.6944];
+
+function hasValidCoordinates(listing: EnrichedListing): boolean {
+    return Number.isFinite(listing.latitude) && Number.isFinite(listing.longitude);
+}
+
+function MapViewportController({
+    listings,
+    selectedListing,
+}: MapViewportControllerProps) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (selectedListing && hasValidCoordinates(selectedListing)) {
+            map.flyTo([selectedListing.latitude, selectedListing.longitude], 15, {
+                duration: 0.8,
+            });
+            return;
+        }
+
+        const visiblePositions = listings
+            .filter(hasValidCoordinates)
+            .map((listing): [number, number] => [
+                listing.latitude,
+                listing.longitude,
+            ]);
+
+        if (visiblePositions.length === 0) {
+            map.setView(DEFAULT_CENTER, 12);
+            return;
+        }
+
+        if (visiblePositions.length === 1) {
+            map.flyTo(visiblePositions[0], 15, {
+                duration: 0.8,
+            });
+            return;
+        }
+
+        map.fitBounds(visiblePositions, {
+            maxZoom: 14,
+            padding: [36, 36],
+        });
+    }, [map, listings, selectedListing]);
+
+    return null;
+}
 
 function getMarkerColor(marketPosition: string): string {
     if (marketPosition === "potential_opportunity") {
@@ -47,22 +107,30 @@ export function ListingMap({
     selectedListingId,
     onSelectListing,
 }: ListingMapProps) {
-    const center: [number, number] = [41.4993, -81.6944];
+    const selectedListing =
+        listings.find((listing) => listing.id === selectedListingId) ?? null;
+
+    const mappableListings = listings.filter(hasValidCoordinates);
 
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-800 shadow-2xl shadow-slate-950/50">
             <MapContainer
-                center={center}
+                center={DEFAULT_CENTER}
                 zoom={12}
                 scrollWheelZoom={false}
                 className="h-[520px] w-full"
             >
+                <MapViewportController
+                    listings={listings}
+                    selectedListing={selectedListing}
+                />
+
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {listings.map((listing) => {
+                {mappableListings.map((listing) => {
                     const isSelected = listing.id === selectedListingId;
 
                     return (
