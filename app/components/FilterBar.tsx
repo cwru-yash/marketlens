@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { MarketPosition } from "@/lib/types";
 
 type SortOption = "price_asc" | "price_desc" | "opportunity_first";
@@ -5,6 +6,8 @@ type SortOption = "price_asc" | "price_desc" | "opportunity_first";
 type FilterBarProps = {
     searchQuery: string;
     onSearchQueryChange: (value: string) => void;
+    searchSuggestions: string[];
+    onSearchSuggestionSelect: (value: string) => void;
     marketPositionFilter: MarketPosition | "all";
     onMarketPositionFilterChange: (value: MarketPosition | "all") => void;
     sortOption: SortOption;
@@ -14,26 +17,73 @@ type FilterBarProps = {
 export function FilterBar({
     searchQuery,
     onSearchQueryChange,
+    searchSuggestions,
+    onSearchSuggestionSelect,
     marketPositionFilter,
     onMarketPositionFilterChange,
     sortOption,
     onSortOptionChange,
 }: FilterBarProps) {
+    const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+    const shouldShowSuggestions =
+        isSuggestionsOpen &&
+        searchQuery.trim().length > 0 &&
+        searchSuggestions.length > 0;
+
+    const handleSearchChange = (value: string) => {
+        onSearchQueryChange(value);
+        setIsSuggestionsOpen(value.trim().length > 0);
+    };
+
+    const handleSuggestionSelect = (value: string) => {
+        onSearchSuggestionSelect(value);
+        setIsSuggestionsOpen(false);
+    };
+
     return (
         <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl shadow-slate-950/40">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(220px,0.8fr)_minmax(220px,0.8fr)]">
-                <label className="grid gap-2">
-                    <span className="text-sm font-medium text-slate-300">
+                <div className="relative grid gap-2">
+                    <label
+                        htmlFor="listing-search"
+                        className="text-sm font-medium text-slate-300"
+                    >
                         Search listings
-                    </span>
+                    </label>
 
                     <input
+                        id="listing-search"
                         value={searchQuery}
-                        onChange={(event) => onSearchQueryChange(event.target.value)}
+                        onChange={(event) => handleSearchChange(event.target.value)}
+                        onFocus={() =>
+                            setIsSuggestionsOpen(searchQuery.trim().length > 0)
+                        }
+                        onKeyDown={(event) => {
+                            if (event.key === "Escape") {
+                                setIsSuggestionsOpen(false);
+                            }
+                        }}
                         placeholder="Search address, neighbourhood, ZIP, or property type..."
+                        autoComplete="off"
                         className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-cyan-400/20 transition placeholder:text-slate-600 focus:border-cyan-400 focus:ring-4"
                     />
-                </label>
+
+                    {shouldShowSuggestions ? (
+                        <div className="absolute top-full z-20 mt-2 w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-950 shadow-2xl shadow-slate-950/60">
+                            {searchSuggestions.map((suggestion) => (
+                                <button
+                                    key={suggestion}
+                                    type="button"
+                                    onMouseDown={(event) => event.preventDefault()}
+                                    onClick={() => handleSuggestionSelect(suggestion)}
+                                    className="block w-full px-4 py-2.5 text-left text-sm text-slate-200 transition hover:bg-cyan-400/10 hover:text-cyan-200 focus:bg-cyan-400/10 focus:text-cyan-200 focus:outline-none"
+                                >
+                                    {suggestion}
+                                </button>
+                            ))}
+                        </div>
+                    ) : null}
+                </div>
 
                 <label className="grid gap-2">
                     <span className="text-sm font-medium text-slate-300">

@@ -28,6 +28,42 @@ export function DashboardExplorer({ listings }: DashboardExplorerProps) {
 
     const [sortOption, setSortOption] = useState<SortOption>("opportunity_first");
 
+    const searchSuggestions = useMemo(() => {
+        const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+
+        if (normalizedSearchQuery.length === 0) {
+            return [];
+        }
+
+        const suggestionCandidates = listings.flatMap((listing) => [
+            listing.neighbourhood,
+            listing.zipcode,
+            listing.address,
+            listing.property_type,
+        ]);
+
+        const uniqueMatches: string[] = [];
+        const seenSuggestions = new Set<string>();
+
+        for (const candidate of suggestionCandidates) {
+            const normalizedCandidate = candidate.toLowerCase();
+
+            if (
+                normalizedCandidate.includes(normalizedSearchQuery) &&
+                !seenSuggestions.has(normalizedCandidate)
+            ) {
+                uniqueMatches.push(candidate);
+                seenSuggestions.add(normalizedCandidate);
+            }
+
+            if (uniqueMatches.length === 6) {
+                break;
+            }
+        }
+
+        return uniqueMatches;
+    }, [listings, searchQuery]);
+
     const filteredListings = useMemo(() => {
         const normalizedSearchQuery = searchQuery.trim().toLowerCase();
 
@@ -88,6 +124,8 @@ export function DashboardExplorer({ listings }: DashboardExplorerProps) {
             <FilterBar
                 searchQuery={searchQuery}
                 onSearchQueryChange={setSearchQuery}
+                searchSuggestions={searchSuggestions}
+                onSearchSuggestionSelect={setSearchQuery}
                 marketPositionFilter={marketPositionFilter}
                 onMarketPositionFilterChange={setMarketPositionFilter}
                 sortOption={sortOption}
