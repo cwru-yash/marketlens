@@ -8,7 +8,7 @@ const ListingMap = dynamic(
     {
         ssr: false,
         loading: () => (
-            <div className="mt-8 flex h-[520px] items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 text-slate-400">
+            <div className="mt-0 flex h-[520px] items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 text-slate-400">
                 Loading map...
             </div>
         ),
@@ -17,8 +17,20 @@ const ListingMap = dynamic(
 
 type MapSectionProps = {
     listings: EnrichedListing[];
+    selectedListingId: string | null;
+    onSelectListing: (listingId: string) => void;
 };
 
-export function MapSection({ listings }: MapSectionProps) {
-    return <ListingMap listings={listings} />;
+export function MapSection({
+    listings,
+    selectedListingId,
+    onSelectListing,
+}: MapSectionProps) {
+    return (
+        <ListingMap
+            listings={listings}
+            selectedListingId={selectedListingId}
+            onSelectListing={onSelectListing}
+        />
+    );
 }

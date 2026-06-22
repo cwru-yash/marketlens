@@ -1,76 +1,46 @@
-import { calculatePricePerSquareFoot } from "@/lib/analytics/price";
-import { demo_listings } from "@/lib/data/demo-listings";
-import { median } from "@/lib/analytics/stats";
+import { DashboardExplorer } from "@/app/components/DashboardExplorer";
 import { enrichListings } from "@/lib/analytics/score";
-import { ListingCard } from "@/app/components/ListingCard";
-import { KpiCards } from "@/app/components/KpiCards";
-import { MapSection } from "@/app/components/MapSection";
+import { demo_listings } from "@/lib/data/demo-listings";
 
 export default function Home() {
-  const featuredListing = demo_listings[0];
-  const pricePerSquareFoot = calculatePricePerSquareFoot(featuredListing);
-  const allPricesPerSquareFoot = demo_listings.map((listing) =>
-    calculatePricePerSquareFoot(listing),
-  );
-
-  const medianPricePerSquareFoot = median(allPricesPerSquareFoot);
   const enrichedListings = enrichListings(demo_listings);
 
-
   return (
-    <main className="min-h-screen bg-slate-950 px-8 py-16 text-slate-100">
-      <section className="mx-auto max-w-4xl">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">
-          Residential Listing Intelligence
-        </p>
-
-        <h1 className="text-5xl font-bold tracking-tight">
-          MarketLens
-        </h1>
-
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-          Explore residential listings, compare asking prices against nearby
-          comparable homes, and understand market positioning with transparent
-          analytics.
-        </p>
-
-        <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Current build milestone</p>
-          <p className="mt-2 text-xl font-semibold">
-            First analytics function is live.
+    <main className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100 md:px-10">
+      <section className="mx-auto max-w-7xl">
+        <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 p-8 shadow-2xl shadow-cyan-950/20">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
+            Residential Listing Intelligence
           </p>
+
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:items-end">
+            <div>
+              <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
+                MarketLens
+              </h1>
+
+              <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+                Explore residential listings on a map, compare asking prices
+                against similar homes, and prioritize listings that may deserve
+                deeper due diligence.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-5">
+              <p className="text-sm font-medium text-cyan-300">
+                MVP methodology
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                Demo listings are enriched through a transparent comparable-home
+                engine using price per square foot, property type, beds, baths,
+                square footage, and neighborhood-level matching.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm font-medium text-cyan-400">Featured listing</p>
 
-          <h2 className="mt-2 text-2xl font-semibold">
-            {featuredListing.address}
-          </h2>
-
-          <p className="mt-2 text-slate-300">
-            {featuredListing.neighbourhood} · {featuredListing.beds} beds ·{" "}
-            {featuredListing.baths} baths · {featuredListing.sqft} sq ft
-          </p>
-
-          <p className="mt-4 text-3xl font-bold">
-            ${featuredListing.listPrice.toLocaleString()}
-          </p>
-
-          <p className="mt-2 text-slate-400">
-            ${pricePerSquareFoot.toLocaleString()} per sq ft
-          </p>
-
-          <p className="mt-2 text-slate-400">
-            Dataset median: ${medianPricePerSquareFoot.toLocaleString()} per sq ft
-          </p>
-        </div>
-        <MapSection listings={enrichedListings} />
-        <KpiCards listings={enrichedListings} />
-        <div className="mt-8 grid gap-4">
-          {enrichedListings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </div>
+        <DashboardExplorer listings={enrichedListings} />
       </section>
     </main>
   );
