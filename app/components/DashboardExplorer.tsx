@@ -163,7 +163,7 @@ export function DashboardExplorer({ listings }: DashboardExplorerProps) {
                 </div>
 
                 <div className="min-w-0">
-                    <div className="sticky top-6 space-y-6">
+                    <div className="space-y-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
                         <MapSection
                             listings={filteredListings}
                             selectedListingId={selectedListing?.id ?? null}

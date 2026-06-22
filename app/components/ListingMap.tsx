@@ -118,7 +118,7 @@ export function ListingMap({
                 center={DEFAULT_CENTER}
                 zoom={12}
                 scrollWheelZoom={false}
-                className="h-[520px] w-full"
+                className="h-[360px] w-full md:h-[420px]"
             >
                 <MapViewportController
                     listings={listings}

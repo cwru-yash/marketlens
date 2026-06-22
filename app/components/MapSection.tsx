@@ -8,7 +8,7 @@ const ListingMap = dynamic(
     {
         ssr: false,
         loading: () => (
-            <div className="mt-0 flex h-[520px] items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 text-slate-400">
+            <div className="mt-0 flex h-[360px] items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 text-slate-400 md:h-[420px]">
                 Loading map...
             </div>
         ),

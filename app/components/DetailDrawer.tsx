@@ -1,3 +1,4 @@
+import { AiInsightPanel } from "@/app/components/AiInsightPanel";
 import type { EnrichedListing } from "@/lib/types";
 
 type DetailDrawerProps = {
@@ -34,7 +35,7 @@ export function DetailDrawer({ listing }: DetailDrawerProps) {
     }
 
     return (
-        <aside className="sticky top-6 h-fit rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-slate-950/50">
+        <aside className="h-fit rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-slate-950/50">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">
                 Listing intelligence
             </p>
@@ -116,6 +117,8 @@ export function DetailDrawer({ listing }: DetailDrawerProps) {
                     prioritization and due diligence, not investment advice.
                 </p>
             </div>
+
+            <AiInsightPanel listingId={listing.id} />
         </aside>
     );
 }

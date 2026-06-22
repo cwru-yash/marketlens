@@ -13,8 +13,8 @@ export async function GET(
     context: { params: Promise<{ id: string }> },
 ) {
     const { id } = await context.params;
-    const listings = await getListings();
 
+    const listings = await getListings();
     const rawListing = listings.find((listing) => listing.id === id);
 
     if (!rawListing) {
