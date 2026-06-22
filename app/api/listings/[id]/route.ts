@@ -4,7 +4,7 @@ import {
     getFallbackComparableListings,
 } from "@/lib/analytics/comps";
 import { enrichListings } from "@/lib/analytics/score";
-import { demo_listings } from "@/lib/data/demo-listings";
+import { getListings } from "@/lib/data/listing-provider";
 
 const MIN_COMP_COUNT = 2;
 
@@ -13,8 +13,9 @@ export async function GET(
     context: { params: Promise<{ id: string }> },
 ) {
     const { id } = await context.params;
+    const listings = await getListings();
 
-    const rawListing = demo_listings.find((listing) => listing.id === id);
+    const rawListing = listings.find((listing) => listing.id === id);
 
     if (!rawListing) {
         return NextResponse.json(
@@ -25,15 +26,15 @@ export async function GET(
         );
     }
 
-    const enrichedListings = enrichListings(demo_listings);
+    const enrichedListings = enrichListings(listings);
     const enrichedListing = enrichedListings.find((listing) => listing.id === id);
 
-    const strictComps = getComparableListings(rawListing, demo_listings);
+    const strictComps = getComparableListings(rawListing, listings);
 
     const comparableListings =
         strictComps.length >= MIN_COMP_COUNT
             ? strictComps
-            : getFallbackComparableListings(rawListing, demo_listings);
+            : getFallbackComparableListings(rawListing, listings);
 
     const comparableIds = new Set(comparableListings.map((listing) => listing.id));
 
@@ -45,6 +46,10 @@ export async function GET(
         listing: enrichedListing,
         comparables: enrichedComparables,
         methodology: {
+            comparableStrategy:
+                strictComps.length >= MIN_COMP_COUNT ? "strict" : "fallback",
+            strictComparableCount: strictComps.length,
+            returnedComparableCount: enrichedComparables.length,
             primaryRules: [
                 "same neighbourhood",
                 "same property type",

@@ -1,8 +1,9 @@
-import { demo_listings } from "@/lib/data/demo-listings";
 import { enrichListings } from "@/lib/analytics/score";
+import { getListings } from "@/lib/data/listing-provider";
 
-export function GET() {
-    const enrichedListings = enrichListings(demo_listings);
+export async function GET() {
+    const listings = await getListings();
+    const enrichedListings = enrichListings(listings);
 
     return Response.json({
         count: enrichedListings.length,

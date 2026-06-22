@@ -1,9 +1,10 @@
 import { DashboardExplorer } from "@/app/components/DashboardExplorer";
 import { enrichListings } from "@/lib/analytics/score";
-import { demo_listings } from "@/lib/data/demo-listings";
+import { getListings } from "@/lib/data/listing-provider";
 
-export default function Home() {
-  const enrichedListings = enrichListings(demo_listings);
+export default async function Home() {
+  const listings = await getListings();
+  const enrichedListings = enrichListings(listings);
 
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100 md:px-10">
