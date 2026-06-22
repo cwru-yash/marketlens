@@ -8,6 +8,9 @@ type FilterBarProps = {
     onSearchQueryChange: (value: string) => void;
     searchSuggestions: string[];
     onSearchSuggestionSelect: (value: string) => void;
+    onAiMatch: () => void;
+    isAiMatchLoading: boolean;
+    isAiMatchActive: boolean;
     marketPositionFilter: MarketPosition | "all";
     onMarketPositionFilterChange: (value: MarketPosition | "all") => void;
     sortOption: SortOption;
@@ -19,6 +22,9 @@ export function FilterBar({
     onSearchQueryChange,
     searchSuggestions,
     onSearchSuggestionSelect,
+    onAiMatch,
+    isAiMatchLoading,
+    isAiMatchActive,
     marketPositionFilter,
     onMarketPositionFilterChange,
     sortOption,
@@ -65,8 +71,17 @@ export function FilterBar({
                         }}
                         placeholder="Search address, neighbourhood, ZIP, or property type..."
                         autoComplete="off"
-                        className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-cyan-400/20 transition placeholder:text-slate-600 focus:border-cyan-400 focus:ring-4"
+                        className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-28 text-slate-100 outline-none ring-cyan-400/20 transition placeholder:text-slate-600 focus:border-cyan-400 focus:ring-4"
                     />
+
+                    <button
+                        type="button"
+                        onClick={onAiMatch}
+                        disabled={isAiMatchLoading || searchQuery.trim().length === 0}
+                        className="absolute right-2 top-[34px] rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:border-cyan-300 hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {isAiMatchLoading ? "Matching..." : "AI Match"}
+                    </button>
 
                     {shouldShowSuggestions ? (
                         <div className="absolute top-full z-20 mt-2 w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-950 shadow-2xl shadow-slate-950/60">
@@ -92,12 +107,13 @@ export function FilterBar({
 
                     <select
                         value={marketPositionFilter}
+                        disabled={isAiMatchActive}
                         onChange={(event) =>
                             onMarketPositionFilterChange(
                                 event.target.value as MarketPosition | "all",
                             )
                         }
-                        className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-cyan-400/20 transition focus:border-cyan-400 focus:ring-4"
+                        className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-cyan-400/20 transition focus:border-cyan-400 focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         <option value="all">All listings</option>
                         <option value="potential_opportunity">
@@ -114,10 +130,11 @@ export function FilterBar({
 
                     <select
                         value={sortOption}
+                        disabled={isAiMatchActive}
                         onChange={(event) =>
                             onSortOptionChange(event.target.value as SortOption)
                         }
-                        className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-cyan-400/20 transition focus:border-cyan-400 focus:ring-4"
+                        className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-cyan-400/20 transition focus:border-cyan-400 focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         <option value="opportunity_first">Opportunity first</option>
                         <option value="price_asc">Price: low to high</option>
@@ -127,8 +144,9 @@ export function FilterBar({
             </div>
 
             <p className="mt-3 text-xs text-slate-500">
-                MVP search runs against the current demo dataset. Production search
-                would connect to a database or listing provider API.
+                {isAiMatchActive
+                    ? "AI match mode is showing ranked matches. Clear AI match to return to manual filters."
+                    : "MVP search runs against the current dataset. AI Match interprets the current search text server-side."}
             </p>
         </div>
     );
